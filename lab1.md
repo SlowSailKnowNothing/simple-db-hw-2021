@@ -265,13 +265,11 @@ Before beginning to write code, we **strongly encourage** you to read through th
 high-level design of SimpleDB.
 
 <p>
-
 You will need to fill in any piece of code that is not implemented. It will be obvious where we think you should write
 code. You may need to add private methods and/or helper classes. You may change APIs, but make sure
 our [grading](#grading) tests still run and make sure to mention, explain, and defend your decisions in your writeup.
 
 <p>
-
 In addition to the methods that you need to fill out for this lab, the class interfaces contain numerous methods that
 you need not implement until subsequent labs. These will either be indicated per class:
 
@@ -293,7 +291,6 @@ public boolean deleteTuple(Tuple t)throws DbException{
 The code that you submit should compile without having to modify these methods.
 
 <p>
-
 We suggest exercises along this document to guide your implementation, but you may find that a different order makes
 more sense for you.
 
@@ -349,7 +346,6 @@ does not have:
 * (In this lab) Indices.
 
 <p>
-
 In the rest of this Section, we describe each of the main components of SimpleDB that you will need to implement in this
 lab. You should use the exercises in this discussion to guide your implementation. This document is by no means a
 complete specification for SimpleDB; you will need to make decisions about how to design and implement various parts of
@@ -373,13 +369,13 @@ file as you will need to access these objects.
 ### Exercise 1
 
 **Implement the skeleton methods in:**
+
 ***
 
 * src/java/simpledb/storage/TupleDesc.java
 * src/java/simpledb/storage/Tuple.java
 
 ***
-
 
 At this point, your code should pass the unit tests TupleTest and TupleDescTest. At this point, modifyRecordId() should
 fail because you havn't implemented it yet.
@@ -402,7 +398,7 @@ using `Database.getBufferPool()`).
 
 * src/java/simpledb/common/Catalog.java
 
-*** 
+***
 
 At this point, your code should pass the unit tests in CatalogTest.
 
@@ -542,7 +538,7 @@ disk.
 
 * src/java/simpledb/storage/HeapFile.java
 
-*** 
+***
 
 To read a page from disk, you will first need to calculate the correct offset in the file. Hint: you will need random
 access to the file in order to read and write pages at arbitrary offsets. You should not call BufferPool methods when

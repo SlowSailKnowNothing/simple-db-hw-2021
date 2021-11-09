@@ -20,12 +20,12 @@ public class TupleDesc implements Serializable {
         /**
          * The type of the field
          * */
-        public final Type fieldType;
+        public final Type fieldType;//比如int类，string类
         
         /**
          * The name of the field
          * */
-        public final String fieldName;
+        public final String fieldName; //字段的名字，比如student，teacher
 
         public TDItem(Type t, String n) {
             this.fieldName = n;
@@ -36,6 +36,13 @@ public class TupleDesc implements Serializable {
             return fieldName + "(" + fieldType + ")";
         }
     }
+
+    private List<TDItem> listOfTDItem;
+    private   int fieldLength;
+    private   int fieldSize;
+
+
+
 
     /**
      * @return
@@ -55,13 +62,22 @@ public class TupleDesc implements Serializable {
      * 
      * @param typeAr
      *            array specifying the number of and types of fields in this
-     *            TupleDesc. It must contain at least one entry.
+     *            TupleDesc. It must contain at least one entry. 指定字段的类型和数量，至少有一个entry
      * @param fieldAr
      *            array specifying the names of the fields. Note that names may
-     *            be null.
+     *            be null. 指定字段的名字，可以为空
      */
     public TupleDesc(Type[] typeAr, String[] fieldAr) {
         // some code goes here
+        this.fieldSize=0;
+        listOfTDItem=new ArrayList<>();
+        this.fieldLength=typeAr.length;
+        for(int i=0;i<fieldLength;i++){
+            Type temp=typeAr[i];
+            this.fieldSize+=temp.getLen();
+            listOfTDItem.add(new TDItem(temp,fieldAr[i]));//这里不确定会不会超出String的下标索引，出错了再看看
+        }
+        
     }
 
     /**
@@ -74,6 +90,11 @@ public class TupleDesc implements Serializable {
      */
     public TupleDesc(Type[] typeAr) {
         // some code goes here
+        listOfTDItem=new ArrayList<>();
+        this.fieldLength=typeAr.length;
+        for(int i=0;i<fieldLength;i++){
+            listOfTDItem.add(new TDItem(typeAr[i],null));//这里不确定会不会超出String的下标索引，出错了再看看
+        }
     }
 
     /**
@@ -81,7 +102,7 @@ public class TupleDesc implements Serializable {
      */
     public int numFields() {
         // some code goes here
-        return 0;
+        return fieldLength;
     }
 
     /**
@@ -95,7 +116,8 @@ public class TupleDesc implements Serializable {
      */
     public String getFieldName(int i) throws NoSuchElementException {
         // some code goes here
-        return null;
+        if(i>=fieldLength) throw new NoSuchElementException();
+        else return listOfTDItem.get(i).fieldName;
     }
 
     /**
@@ -109,8 +131,8 @@ public class TupleDesc implements Serializable {
      *             if i is not a valid field reference.
      */
     public Type getFieldType(int i) throws NoSuchElementException {
-        // some code goes here
-        return null;
+        if(i>=fieldLength) throw new NoSuchElementException();
+        else return listOfTDItem.get(i).fieldType;
     }
 
     /**
@@ -124,7 +146,11 @@ public class TupleDesc implements Serializable {
      */
     public int fieldNameToIndex(String name) throws NoSuchElementException {
         // some code goes here
-        return 0;
+        int i=0;
+        for(;i<fieldLength;i++){
+            if(listOfTDItem.get(i).fieldName==name)return i;
+        }
+        throw new NoSuchElementException();
     }
 
     /**
@@ -133,7 +159,8 @@ public class TupleDesc implements Serializable {
      */
     public int getSize() {
         // some code goes here
-        return 0;
+
+        return fieldSize;
     }
 
     /**
@@ -148,7 +175,20 @@ public class TupleDesc implements Serializable {
      */
     public static TupleDesc merge(TupleDesc td1, TupleDesc td2) {
         // some code goes here
-        return null;
+        List<Type> typeList=new ArrayList<>();
+        List<String> nameList=new ArrayList<>();
+
+        for(TDItem item:td1.listOfTDItem){
+            typeList.add(item.fieldType);
+            nameList.add(item.fieldName);
+        }
+
+        for(TDItem item:td2.listOfTDItem){
+            typeList.add(item.fieldType);
+            nameList.add(item.fieldName);
+        }
+
+        return new TupleDesc(typeList.toArray(new Type[typeList.size()]),nameList.toArray(new String[nameList.size()]));//注意这个转array的方法
     }
 
     /**
