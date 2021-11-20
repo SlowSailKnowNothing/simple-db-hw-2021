@@ -51,7 +51,7 @@ public class TupleDesc implements Serializable {
      * */
     public Iterator<TDItem> iterator() {
         // some code goes here
-        return null;
+        return listOfTDItem.iterator();
     }
 
     private static final long serialVersionUID = 1L;
@@ -93,7 +93,9 @@ public class TupleDesc implements Serializable {
         listOfTDItem=new ArrayList<>();
         this.fieldLength=typeAr.length;
         for(int i=0;i<fieldLength;i++){
-            listOfTDItem.add(new TDItem(typeAr[i],null));//这里不确定会不会超出String的下标索引，出错了再看看
+            Type temp=typeAr[i];
+            fieldSize+=temp.getLen();
+            listOfTDItem.add(new TDItem(temp,"Null"));//这里不确定会不会超出String的下标索引，出错了再看看
         }
     }
 
@@ -147,11 +149,15 @@ public class TupleDesc implements Serializable {
     public int fieldNameToIndex(String name) throws NoSuchElementException {
         // some code goes here
         int i=0;
-        for(;i<fieldLength;i++){
-            if(listOfTDItem.get(i).fieldName==name)return i;
+        try {
+            for(;i<fieldLength;i++){
+                if(listOfTDItem.get(i).fieldName.equals(name))return i;
+            }
+        } catch (Exception e) {}
+            throw new NoSuchElementException();
         }
-        throw new NoSuchElementException();
-    }
+
+
 
     /**
      * @return The size (in bytes) of tuples corresponding to this TupleDesc.
@@ -202,9 +208,17 @@ public class TupleDesc implements Serializable {
      * @return true if the object is equal to this TupleDesc.
      */
 
-    public boolean equals(Object o) {
+    public boolean equals(Object o) {//可以参考下别人的写法
         // some code goes here
+        if(this==o)return true;
+        if(!(o instanceof TupleDesc))return false;
+        TupleDesc outTupleDesc=(TupleDesc)o;
+        if(outTupleDesc.fieldLength!=this.fieldLength)
         return false;
+        for(int i=0;i<this.fieldLength;i++){
+            if(!(this.getFieldType(i)==outTupleDesc.getFieldType(i))||!(this.getFieldName(i).equals(outTupleDesc.getFieldName(i))))return false;
+        }
+        return true;
     }
 
     public int hashCode() {
@@ -222,6 +236,10 @@ public class TupleDesc implements Serializable {
      */
     public String toString() {
         // some code goes here
-        return "";
+        StringBuilder sb=new StringBuilder();
+        for(TDItem item:this.listOfTDItem){
+            sb.append(item.fieldType.toString()+item.fieldName.toString()+",");
+        }
+        return sb.deleteCharAt(sb.length()-1).toString();
     }
 }

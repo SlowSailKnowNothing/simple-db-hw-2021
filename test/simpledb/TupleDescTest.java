@@ -132,6 +132,7 @@ public class TupleDescTest extends SimpleDbTestBase {
 
         for (int len: lengths) {
             TupleDesc td = Utility.getTupleDesc(len);
+            System.out.println(len);
             assertEquals(len * Type.INT_TYPE.getLen(), td.getSize());
         }
     }

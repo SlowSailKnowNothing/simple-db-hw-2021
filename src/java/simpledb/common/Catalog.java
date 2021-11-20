@@ -29,7 +29,23 @@ public class Catalog {
      */
     public Catalog() {
         // some code goes here
+        tableNameMap=new ConcurrentHashMap<>();
+        tableIdMap=new ConcurrentHashMap<>();
     }
+
+    class Table{
+        public Table(DbFile file,String name,String pKeyField){
+            this.file=file;
+            this.name=name;
+            this.pKeyField=pKeyField;
+        }
+
+        public DbFile file;
+        public String name;
+        public String pKeyField;
+    }
+    Map<String,Table> tableNameMap;
+    Map<Integer,Table> tableIdMap;
 
     /**
      * Add a new table to the catalog.
@@ -42,6 +58,9 @@ public class Catalog {
      */
     public void addTable(DbFile file, String name, String pkeyField) {
         // some code goes here
+        Table table=new Table(file,name,pkeyField);
+        tableNameMap.put(name,table);
+        tableIdMap.put(getTableId(name),table);
     }
 
     public void addTable(DbFile file, String name) {
@@ -65,7 +84,14 @@ public class Catalog {
      */
     public int getTableId(String name) throws NoSuchElementException {
         // some code goes here
-        return 0;
+        int id= 0;
+        try {
+            Table tab=tableNameMap.get(name);
+            id = tab.file.getId();
+        } catch (Exception e) {
+            throw new NoSuchElementException();
+        }
+        return id;
     }
 
     /**
@@ -76,6 +102,12 @@ public class Catalog {
      */
     public TupleDesc getTupleDesc(int tableid) throws NoSuchElementException {
         // some code goes here
+        try {
+            Table table = tableIdMap.get(tableid);
+            TupleDesc tDesc=table.file.getTupleDesc();
+        } catch (Exception e) {
+            throw  new NoSuchElementException();
+        }
         return null;
     }
 
@@ -87,33 +119,60 @@ public class Catalog {
      */
     public DbFile getDatabaseFile(int tableid) throws NoSuchElementException {
         // some code goes here
-        return null;
+        DbFile file= null;
+        try {
+            Table table = tableIdMap.get(tableid);
+            file = table.file;
+        } catch (Exception e) {
+            throw new NoSuchElementException();
+        }
+        return file;
     }
 
     public String getPrimaryKey(int tableid) {
         // some code goes here
-        return null;
+
+        String pKey=null;
+        try {
+            pKey=tableIdMap.get(tableid).pKeyField;
+        } catch (Exception e) {
+            throw  new NoSuchElementException();
+        }
+        return pKey;
     }
 
     public Iterator<Integer> tableIdIterator() {
         // some code goes here
-        return null;
+
+        return tableIdMap.keySet().iterator();
     }
 
     public String getTableName(int id) {
         // some code goes here
-        return null;
+        String name= null;
+        try {
+            Table table=tableIdMap.get(id);
+            name = table.name;
+        } catch (Exception e) {
+            throw new NoSuchElementException();
+        }
+        return name;
     }
     
     /** Delete all tables from the catalog */
     public void clear() {
         // some code goes here
+        tableIdMap.clear();
+        tableNameMap.clear();
     }
     
     /**
      * Reads the schema from a file and creates the appropriate tables in the database.
      * @param catalogFile
      */
+
+
+
     public void loadSchema(String catalogFile) {
         String line = "";
         String baseFolder=new File(new File(catalogFile).getAbsolutePath()).getParent();
@@ -124,7 +183,7 @@ public class Catalog {
                 //assume line is of the format name (field type, field type, ...)
                 String name = line.substring(0, line.indexOf("(")).trim();
                 //System.out.println("TABLE NAME: " + name);
-                String fields = line.substring(line.indexOf("(") + 1, line.indexOf(")")).trim();
+                String fields = line.substring(line.indexOf("(") + 1, line.indexOf(")")).trim();//
                 String[] els = fields.split(",");
                 ArrayList<String> names = new ArrayList<>();
                 ArrayList<Type> types = new ArrayList<>();

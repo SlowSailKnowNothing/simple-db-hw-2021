@@ -44,6 +44,9 @@ public class IntField implements Field {
         dos.writeInt(value);
     }
 
+
+
+
     /**
      * Compare the specified field to the value of this Field.
      * Return semantics are as specified by Field.compare

@@ -382,8 +382,7 @@ fail because you havn't implemented it yet.
 
 ### 2.3. Catalog
 
-The catalog (class `Catalog` in SimpleDB) consists of a list of the tables and schemas of the tables that are currently
-in the database. You will need to support the ability to add a new table, as well as getting information about a
+The catalog (class `Catalog` in SimpleDB) consists of a list of the tables and schemas of the tables that are currently in the database. You will need to support the ability to add a new table, as well as getting information about a
 particular table. Associated with each table is a `TupleDesc` object that allows operators to determine the types and
 number of fields in a table.
 
